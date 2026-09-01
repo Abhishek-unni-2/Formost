@@ -2,7 +2,8 @@ import { neon } from '@neondatabase/serverless';
 
 // One HTTP-based Neon client per cold start. DATABASE_URL is provided by the
 // Vercel <-> Neon integration (or set it manually in Project Settings).
-const sql = neon(process.env.DATABASE_URL);
+// fullResults:true -> query() returns { rows, rowCount, ... } like node-postgres.
+const sql = neon(process.env.DATABASE_URL, { fullResults: true });
 
 /**
  * Build a tiny REST handler for one table.

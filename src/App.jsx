@@ -8,7 +8,7 @@ import {
   LEADS,
   LOGO_SRC
 } from './data/mockData';
-import * as db from './services/supabaseService';
+import * as db from './services/dataService';
 
 // Import subcomponents
 import Login from './components/Login';
@@ -520,7 +520,13 @@ export default function App() {
     });
     setLeads(remappedLeads);
 
-    db.deleteStep(targetStep.num)
+    // After renumbering, the old highest `num` is left orphaned in the DB
+    // (rows only get rewritten up to the new count). Drop it too.
+    const staleNum = String(steps.length).padStart(2, '0');
+    Promise.all([
+      db.deleteStep(targetStep.num),
+      staleNum !== targetStep.num ? db.deleteStep(staleNum) : Promise.resolve(),
+    ])
       .then(() => {
         reindexedSteps.forEach(s => db.saveStep(s).catch(err => console.error(err)));
       })

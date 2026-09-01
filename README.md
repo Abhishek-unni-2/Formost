@@ -16,6 +16,24 @@ A structured React + Vite dashboard and pipeline management application for **Fo
 7. **Staff Profile Control**: Base64 photo avatar uploader, personal info settings, and password updates.
 8. **Admin Panel**: Dedicated pages to manage systems users and district office locations.
 
+## Architecture
+
+- **Frontend** — React + Vite single-page app (`src/`). No client-side router; page state lives in `App.jsx`.
+- **API** — Vercel serverless functions in `api/` (`districts`, `users`, `steps`, `leads`, `quotations`, `settings`, plus `meta-webhook`). Thin REST CRUD over one table each; shared logic in `api/_crud.js`.
+- **Database** — Neon (serverless Postgres). Schema + seed in `db/schema.sql`.
+- **Data layer** — `src/services/dataService.js` calls the `/api/*` routes. If the API isn't reachable (e.g. plain `npm run dev` with no backend), the app falls back to **offline mock-data mode** using `src/data/mockData.js` — fully usable, but nothing persists.
+
+## Deploying to Vercel + Neon
+
+1. **Create the database** — in Vercel: *Project → Storage → Create Database → Neon* (or add Neon from the Marketplace). This sets `DATABASE_URL` on the project automatically. (Or create a project at [neon.tech](https://neon.tech) and paste its connection string as `DATABASE_URL` in *Project → Settings → Environment Variables*.)
+2. **Load the schema** — open the Neon **SQL Editor** and paste the contents of [`db/schema.sql`](db/schema.sql). Run it once. It creates the tables and seeds districts, the 15 pipeline steps, the 11 login users, and 5 demo leads. Safe to re-run.
+3. **Import the repo into Vercel** — *Add New → Project → import `Abhishek-unni-2/Formost`*. Framework preset **Vite** is auto-detected (build `vite build`, output `dist`). Deploy.
+4. **(Optional) Meta Lead Ads webhook** — add env vars `META_VERIFY_TOKEN` and `META_PAGE_ACCESS_TOKEN`, then point your Meta app's `leadgen` webhook at `https://<your-app>.vercel.app/api/meta-webhook`.
+
+That's it — the deployed site talks to the API automatically (any non-`localhost` host does). To test the API locally, install the Vercel CLI and run `vercel dev` with `DATABASE_URL` and `VITE_USE_API=1` in a `.env` file (see `.env.example`).
+
+Regenerate `db/schema.sql` after editing mock data with: `node db/generate-schema.mjs > db/schema.sql`.
+
 ## Development Scripts
 
 To run this application locally, you will need **Node.js (version 20 or higher)** installed on your machine.

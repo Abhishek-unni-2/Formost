@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { fetchSettings, saveSettings, isConfigured } from '../services/supabaseService';
+import { fetchSettings, saveSettings, isConfigured } from '../services/dataService';
 
 const DEFAULT_CONFIG = {
   firebase: { apiKey: '', projectId: '', authDomain: '', appId: '' },

@@ -1,0 +1,4 @@
+node_modules/
+dist/
+.env
+node-v20.14.0-darwin-arm64/

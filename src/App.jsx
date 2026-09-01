@@ -112,7 +112,7 @@ export default function App() {
   const canAccessStage = (idx) => {
     if (!currentUser) return false;
     if (isAdmin()) return true;
-    // Check step's actual role from Supabase first
+    // Check the step's actual role from the DB first
     if (steps[idx]?.role === currentUser.role) return true;
     // Fallback to hardcoded ROLE_ACCESS
     const access = ROLE_ACCESS[currentUser.role];
@@ -147,11 +147,11 @@ export default function App() {
     setTimeout(() => setToast({ show: false, msg: '', type: '' }), 3200);
   };
 
-  // Fetch data from Supabase on mount
+  // Fetch data from the API (Neon) on mount
   useEffect(() => {
     async function loadData() {
       if (!db.isConfigured()) {
-        showToast('Running in local/offline backup mode with mock data.', 'error');
+        showToast('Running in offline mode with sample data.', 'error');
         return;
       }
       
@@ -179,9 +179,9 @@ export default function App() {
       else if (resQuotes.data) setQuotations(resQuotes.data);
       
       if (errorOccurred) {
-        showToast('Error syncing with Supabase. Check database tables.', 'error');
+        showToast('Could not reach the database. Run db/schema.sql and redeploy.', 'error');
       } else {
-        showToast('Synced with Supabase successfully!');
+        showToast('Synced with the database.');
       }
     }
     loadData();

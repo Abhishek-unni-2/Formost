@@ -82,7 +82,7 @@ export default function Settings({ showToast, districts }) {
 
   useEffect(() => {
     async function loadCfg() {
-      // Try Supabase first, fall back to localStorage
+      // Try the API first, fall back to localStorage
       if (isConfigured()) {
         const { data } = await fetchSettings();
         if (data && Object.keys(data).length > 0) {
@@ -104,7 +104,7 @@ export default function Settings({ showToast, districts }) {
     setCfg(updated);
     // Save to localStorage (instant fallback)
     try { localStorage.setItem('formostOpsConfig', JSON.stringify(updated)); } catch (e) {}
-    // Save to Supabase (persists across devices)
+    // Save to the API (persists across devices)
     if (isConfigured()) {
       saveSettings(updated).catch(err => console.error('Settings save error:', err));
     }
@@ -369,7 +369,7 @@ export default function Settings({ showToast, districts }) {
             {[
               { key: 'META_VERIFY_TOKEN', value: cfg.meta.verifyToken || 'FORMOST_VERIFY_2024' },
               { key: 'META_PAGE_ACCESS_TOKEN', value: '(your page access token from Meta)' },
-              { key: 'SUPABASE_SERVICE_KEY', value: '(service role key from Supabase → Settings → API)' },
+              { key: 'DATABASE_URL', value: '(set automatically by the Vercel + Neon integration)' },
             ].map(v => (
               <div key={v.key} style={{ display: 'flex', gap: '12px', marginBottom: '10px', flexWrap: 'wrap', alignItems: 'center' }}>
                 <code style={{ background: '#f0f0ee', padding: '4px 10px', borderRadius: '6px', fontSize: '12px', fontFamily: 'monospace', fontWeight: 700, color: 'var(--red)' }}>{v.key}</code>
